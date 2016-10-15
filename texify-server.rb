@@ -9,9 +9,14 @@ require './texify'
 
 $port = ARGV[0] || 2000
 
+$debug = ARGV[1]
+$ids = 0
+puts "DEBUG mode" if $debug
+
 server = TCPServer.open($port)   # Socket to listen on port 2000
 loop do                         # Servers run forever
     Thread.start(server.accept) do |client|
+        puts "Thread: #{$ids += 1}" if $debug
         head = client.gets
         buffer = ""
         loop do
@@ -27,6 +32,7 @@ loop do                         # Servers run forever
             end
         end
         puts head
+        puts buffer if $debug
         if head =~ /^POST/
             t = buffer.split(/\r\n\r\n/,2)
             boundary = t[1][/^----.*(?=\r\n)/]
@@ -43,6 +49,8 @@ loop do                         # Servers run forever
                 end
             end
 
+            puts "FILE: --" if $debug
+            puts file if $debug
             # texify
             begin
                 t = Texify.new(file,nil,opt)
