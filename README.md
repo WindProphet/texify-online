@@ -6,6 +6,8 @@
 
 ensure you have installed `xelatex`
 
+unzip program, this place `7za` used
+
 ## start
 
 	$ ./texify-online.rb [port=2000]
@@ -26,6 +28,8 @@ post from http by `multipart/form-data `
 ##### ZIP
 
 you should ensure that you zip contains a tex file or it contains a folder which contains a tex source file.
+
+**ERROR** Some ZIP cannot dealt successfully
 
 ##### TeX Source file
 
