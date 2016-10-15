@@ -40,7 +40,7 @@ class Texify
                 "xelatex",
                 "-output-directory=#{@DIR}",
                 "-halt-on-error",
-                "main.tex"]) do |pipe|
+                "#{@DIR}/main.tex"]) do |pipe|
                 @TEXLOG = pipe.read
             end
             raise "TeXify error" if $?.exitstatus != 0
@@ -83,7 +83,7 @@ class Texify
                 "xelatex",
                 "-output-directory=#{d}",
                 "-halt-on-error",
-                x]) do |pipe|
+                "#{d}/#{x}"]) do |pipe|
                 @TEXLOG = pipe.read
             end
             raise "TeXify error" if $?.exitstatus != 0
