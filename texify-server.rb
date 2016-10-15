@@ -47,7 +47,7 @@ loop do                         # Servers run forever
             begin
                 t = Texify.new(file,nil,opt)
                 t.gets
-                client.write "HTTP/1.1 201 OK\r\n" \ # success and return pdf
+                client.write "HTTP/1.1 201 OK\r\n" \
                              "Content-Type: application/pdf\r\n\r\n" \
                              "#{t.output}"
             rescue Exception => e # error rescue
@@ -62,7 +62,7 @@ loop do                         # Servers run forever
                              """
             end
         else
-            client.write "HTTP/1.1 200 OK\r\n" \  # web content
+            client.write "HTTP/1.1 200 OK\r\n" \
                          "Content-Type: text/html; charset=utf-8\r\n\r\n" \
             """
             <meta charset='UTF-8'>
