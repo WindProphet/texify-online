@@ -127,3 +127,15 @@ class Texify
         @OUTPUT
     end
 end
+
+begin
+    t = Texify.new(STDIN.read,nil,ARGV)
+    t.gets
+    puts t.output
+rescue Exception => e # error rescue
+    puts e
+    puts ""
+    puts ""
+    puts t.log
+    exit 1
+end

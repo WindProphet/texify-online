@@ -1,8 +1,9 @@
 #!/usr/bin/env ruby
 
 require 'socket'                # Get sockets from stdlib
-require './texify'
+# require './texify'
 
+`cd $(dirname $0)`
 `cat /tmp/rubyserver.pid && kill $(cat /tmp/rubyserver.pid) || echo 0`
 `echo #{Process.pid} > /tmp/rubyserver.pid`
 # puts Process.pid
@@ -16,7 +17,8 @@ puts "DEBUG mode" if $debug
 server = TCPServer.open($port)   # Socket to listen on port 2000
 loop do                         # Servers run forever
     Thread.start(server.accept) do |client|
-        puts "Thread: #{$ids += 1}" if $debug
+        id = $ids += 1
+        puts "Thread: #{id}" if $debug
         head = client.gets
         buffer = ""
         loop do
@@ -39,6 +41,7 @@ loop do                         # Servers run forever
             pieces = t[1].split(boundary)
             opt = ""
             file = ""
+            ret = ""
             pieces.each do |item|
                 if item[/Content-Disposition:.*$/]
                     if item[/Content-Disposition:.*$/] =~ /name=\"opt\"/
@@ -52,23 +55,30 @@ loop do                         # Servers run forever
             puts "FILE: --" if $debug
             puts file if $debug
             # texify
-            begin
-                t = Texify.new(file,nil,opt)
-                t.gets
+            IO.popen(['./texify.rb', opt], 'r+') do |pipe|
+                pipe.write file
+                pipe.close_write
+                ret = pipe.read
+            end
+            ex = $?.exitstatus
+            if ex == 0
+                puts "success" if $debug
                 client.write "HTTP/1.1 201 OK\r\n" \
                              "Content-Type: application/pdf\r\n\r\n" \
-                             "#{t.output}"
-            rescue Exception => e # error rescue
+                             "#{ret}"
+            else
+                puts "error and info" if $debug
                 client.write "HTTP/1.1 200 OK\r\n" \
                              "Content-Type: text/html\r\n" \
                              """
                              <meta charset='UTF-8'>
                              <title>TeXify Online</title>
                              <h1>TeXify Error</h1>
-                             <p>#{e}</p>
-                             <pre>#{t.log}</pre>
+                             <pre>#{ret}</pre>
                              """
             end
+
+            puts "end post" if $debug
         else
             client.write "HTTP/1.1 200 OK\r\n" \
                          "Content-Type: text/html; charset=utf-8\r\n\r\n" \
@@ -85,5 +95,6 @@ loop do                         # Servers run forever
             """
         end
         client.close                # Disconnect from the client
+        puts "Thread: #{id} END" if $debug
     end
 end
