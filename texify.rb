@@ -51,20 +51,21 @@ class Texify
         File.open("#{@DIR}/archive.zip", "w") do |file|
             file.write(@FILES)
         end
-        IO.popen(["unzip", "#{@DIR}/archive.zip", "-d", "#{@DIR}/archive"]) do |pipe|
+        `mkdir #{@DIR}/files`
+        IO.popen(["unzip", "#{@DIR}/archive.zip", "-d", "#{@DIR}/files"]) do |pipe|
             @ZIPLOG = pipe.read
         end
         raise "zip archive error" if $?.exitstatus != 0
         x = "" # texfile name
         d = "" # directory name
-        Dir.foreach("#{@DIR}/archive") do |entry|
+        Dir.foreach("#{@DIR}/files") do |entry|
             if entry =~ /\.tex$/
                 x = entry
-                d = "#{@DIR}/archive"
+                d = "#{@DIR}/files"
             end
-            if File::directory?("#{@DIR}/archive/#{entry}")
+            if File::directory?("#{@DIR}/files/#{entry}")
                 if (entry =~ /^[_\.]/) == nil
-                    d = "#{@DIR}/archive/#{entry}"
+                    d = "#{@DIR}/files/#{entry}"
                     Dir.foreach(d) do |entry|
                         if entry =~ /\.tex$/
                             x = entry
