@@ -53,7 +53,7 @@ class Texify
         end
         `mkdir #{@DIR}/files`
         Dir.chdir "#{@DIR}/files" do
-            IO.popen(["7z", "-y", "x", "#{@DIR}/archive.zip"]) do |pipe|
+            IO.popen(["7za", "-y", "x", "#{@DIR}/archive.zip"]) do |pipe|
                 @ZIPLOG = pipe.read
             end
         end
