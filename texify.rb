@@ -1,7 +1,5 @@
 #!/usr/bin/env ruby
 
-`echo -e '\\n\\nhello' >> tmp`
-
 class Texify
     def initialize(file=nil, type=nil, opt=nil)
         @RANDIR = (0...31).map { (65 + rand(26)).chr }.join
@@ -54,14 +52,14 @@ class Texify
             file.write(@FILES)
         end
         `mkdir #{@DIR}/files`
-        `tree #{@DIR} >> tmp`
-        IO.popen(["unzip", "#{@DIR}/archive.zip", "-d", "#{@DIR}/files"]) do |pipe|
-            @ZIPLOG = pipe.read
+        Dir.chdir "#{@DIR}/files" do
+            IO.popen(["7z", "-y", "x", "#{@DIR}/archive.zip"]) do |pipe|
+                @ZIPLOG = pipe.read
+            end
         end
         raise "zip archive error" if $?.exitstatus != 0
         x = "" # texfile name
         d = "" # directory name
-        `echo #{x} #{d} >> tmp`
         Dir.foreach("#{@DIR}/files") do |entry|
             if entry =~ /\.tex$/
                 x = entry
@@ -113,7 +111,6 @@ class Texify
         File.open(@OUT, "r") do |file|
             @OUTPUT = file.read
         end
-        `tree #{@DIR} >> tmp`
         `rm -rf #{@DIR}` # del tmpfile
         @OUTPUT
     end
