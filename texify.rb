@@ -9,20 +9,20 @@ class Texify
         @OPTS = opt if opt
         # puts @FILES
     end
-    
+
     def file(f)
         @FILES = f
     end
-    
+
     def type(t)
         @TYPE = t
     end
-    
+
     def opt(o)
         @OPTS = o
     end
-    
-    private def file_type
+
+    def file_type
         IO.popen(["file", "-"], "r+") do |pipe|
             pipe.write @FILES
             pipe.close_write
@@ -30,8 +30,8 @@ class Texify
         end
         raise  "file command error" if $?.exitstatus != 0
     end
-    
-    private def type_tex
+
+    def type_tex
         Dir.chdir "#{@DIR}" do
             File.open("main.tex", "w") do |file|
                 file.write(@FILES)
@@ -46,8 +46,8 @@ class Texify
         end
         @OUT = "#{@DIR}/main.pdf"
     end
-    
-    private def type_zip
+
+    def type_zip
         File.open("#{@DIR}/archive.zip", "w") do |file|
             file.write(@FILES)
         end
@@ -74,9 +74,9 @@ class Texify
             end
         end
 
-        
+
         raise 'No TeX file found in zip pack' if x.empty?
-        
+
         Dir.chdir d do
             IO.popen([
                 "xelatex",
@@ -88,7 +88,7 @@ class Texify
         end
         @OUT = "#{d}/#{x.gsub(/\.tex$/, '.pdf')}"
     end
-    
+
     def gets
         raise 'No file input' unless @FILES
         file_type unless @TYPE
@@ -111,18 +111,17 @@ class Texify
         `rm -rf #{@DIR}` # del tmpfile
         @OUTPUT
     end
-    
+
     def log
         return @TEXLOG if @TEXLOG
         return @ZIPLOG if @ZIPLOG
     end
-    
+
     def mode
         @MODE
     end
-    
+
     def output
         @OUTPUT
     end
 end
-
