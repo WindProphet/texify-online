@@ -8,7 +8,7 @@ ensure you have installed `xelatex`
 
 ## start
 
-	$ ./texify-online.rb
+	$ ./texify-online.rb [port=2000]
 
 and it will start on port 2000
 
@@ -34,4 +34,4 @@ a isolated TeX source file can also work, but no other resources relied.
 ### Operation
 
 - By html web page, choose the file and click submit
-- by `curl` like this `curl -v --form file=@hello.tex localhost:2000`  **DON’T SUPPOT NOW**# texify-online
+- by `curl` like this `curl -v --form file=@hello.tex localhost:2000`  **DON’T SUPPOT NOW**

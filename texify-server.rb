@@ -5,11 +5,11 @@ require './texify'
 
 `cat /tmp/rubyserver.pid && kill $(cat /tmp/rubyserver.pid) || echo 0`
 `echo #{Process.pid} > /tmp/rubyserver.pid`
-puts Process.pid
+# puts Process.pid
 
+$port = ARGV[0] || 2000
 
-
-server = TCPServer.open(2000)   # Socket to listen on port 2000
+server = TCPServer.open($port)   # Socket to listen on port 2000
 loop do                         # Servers run forever
     Thread.start(server.accept) do |client|
         head = client.gets
@@ -29,12 +29,8 @@ loop do                         # Servers run forever
         puts head
         if head =~ /^POST/
             t = buffer.split(/\r\n\r\n/,2)
-            # `echo "#{t[1]}" > ~/hello.tmp`
-            # puts buffer
-            # boundary = "--" + t[0][/^Content-Type: multipart\/form-data;.*$/][/(?<=boundary=).*$/]
             boundary = t[1][/^----.*(?=\r\n)/]
             pieces = t[1].split(boundary)
-            # puts boundary
             opt = ""
             file = ""
             pieces.each do |item|
@@ -46,15 +42,15 @@ loop do                         # Servers run forever
                     end
                 end
             end
-        
+
             # texify
             begin
                 t = Texify.new(file,nil,opt)
                 t.gets
-                client.write "HTTP/1.1 201 OK\r\n" \
+                client.write "HTTP/1.1 201 OK\r\n" \ # success and return pdf
                              "Content-Type: application/pdf\r\n\r\n" \
                              "#{t.output}"
-            rescue Exception => e
+            rescue Exception => e # error rescue
                 client.write "HTTP/1.1 200 OK\r\n" \
                              "Content-Type: text/html\r\n" \
                              """
@@ -65,9 +61,8 @@ loop do                         # Servers run forever
                              <pre>#{t.log}</pre>
                              """
             end
-            # client.write "HTTP/1.1 404 OK\r\n"
         else
-            client.write "HTTP/1.1 200 OK\r\n" \
+            client.write "HTTP/1.1 200 OK\r\n" \  # web content
                          "Content-Type: text/html; charset=utf-8\r\n\r\n" \
             """
             <meta charset='UTF-8'>
