@@ -108,6 +108,7 @@ class Texify
         File.open(@OUT, "r") do |file|
             @OUTPUT = file.read
         end
+        STDERR.puts `tree #{@DIR}`
         `rm -rf #{@DIR}` # del tmpfile
         @OUTPUT
     end
