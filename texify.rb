@@ -32,18 +32,19 @@ class Texify
     end
 
     def type_tex
-        Dir.chdir "#{@DIR}" do
-            File.open("main.tex", "w") do |file|
+        # Dir.chdir "#{@DIR}" do
+            File.open("#{@DIR}/main.tex", "w") do |file|
                 file.write(@FILES)
             end
             IO.popen([
                 "xelatex",
+                "-output-directory=#{@DIR}",
                 "-halt-on-error",
                 "main.tex"]) do |pipe|
                 @TEXLOG = pipe.read
             end
             raise "TeXify error" if $?.exitstatus != 0
-        end
+        # end
         @OUT = "#{@DIR}/main.pdf"
     end
 
@@ -77,15 +78,16 @@ class Texify
 
         raise 'No TeX file found in zip pack' if x.empty?
 
-        Dir.chdir d do
+        # Dir.chdir d do
             IO.popen([
                 "xelatex",
+                "-output-directory=#{d}",
                 "-halt-on-error",
                 x]) do |pipe|
                 @TEXLOG = pipe.read
             end
             raise "TeXify error" if $?.exitstatus != 0
-        end
+        # end
         @OUT = "#{d}/#{x.gsub(/\.tex$/, '.pdf')}"
     end
 
