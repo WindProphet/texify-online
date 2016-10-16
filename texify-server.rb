@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 
 require 'socket'                # Get sockets from stdlib
-# require './texify'
 
 `cd $(dirname $0)`
 `cat /tmp/rubyserver.pid && kill $(cat /tmp/rubyserver.pid) || echo 0`
@@ -65,11 +64,17 @@ loop do                         # Servers run forever
                 puts "success" if $debug
                 client.write "HTTP/1.1 201 OK\r\n" \
                              "Content-Type: application/pdf\r\n\r\n" \
+                             "Cache-Control: no-cache, no-store, must-revalidate" \
+                             "Pragma: no-cache" \
+                             "Expires: 0" \
                              "#{ret}"
             else
                 puts "error and info" if $debug
                 client.write "HTTP/1.1 200 OK\r\n" \
                              "Content-Type: text/html\r\n" \
+                             "Cache-Control: no-cache, no-store, must-revalidate" \
+                             "Pragma: no-cache" \
+                             "Expires: 0" \
                              """
                              <meta charset='UTF-8'>
                              <title>TeXify Online</title>
