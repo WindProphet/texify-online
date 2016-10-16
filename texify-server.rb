@@ -30,6 +30,9 @@ loop do                         # Servers run forever
             rescue EOFError
                 puts "EOF" if $debug
                 break
+            rescue
+                puts "Error" if $debug
+                break
             end
         end
         puts head
