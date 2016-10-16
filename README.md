@@ -6,7 +6,9 @@
 
 ensure you have installed `xelatex`
 
-unzip program, this place `7za` used
+	yum install -y git ruby unzip texlive-*
+	git clone git://github.com/WindProphet/texify-online
+	cd texify-online && ./texify-server.rb
 
 ## start
 

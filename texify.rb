@@ -57,7 +57,7 @@ class Texify
         end
         `mkdir #{@DIR}/files`
         Dir.chdir "#{@DIR}/files" do
-            IO.popen(["7za", "-y", "x", "#{@DIR}/archive.zip"], {:err => [:child, :out]}) do |pipe|
+            IO.popen(["unzip", "#{@DIR}/archive.zip", "-d", "#{@DIR}/files"], {:err => [:child, :out]}) do |pipe|
                 @LOG << "unarchive program log: \n\n"
                 @LOG << pipe.read
                 @LOG << "\n\n"
