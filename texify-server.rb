@@ -28,7 +28,7 @@ loop do                         # Servers run forever
                 # puts "#{e.backtrace}"
                 break
             rescue EOFError
-                puts "EOF"
+                puts "EOF" if $debug
                 break
             end
         end
@@ -63,18 +63,18 @@ loop do                         # Servers run forever
             if ex == 0
                 puts "success" if $debug
                 client.write "HTTP/1.1 201 OK\r\n" \
-                             "Content-Type: application/pdf\r\n\r\n" \
-                             "Cache-Control: no-cache, no-store, must-revalidate" \
-                             "Pragma: no-cache" \
-                             "Expires: 0" \
-                             "#{ret}"
+                             "Content-Type: application/pdf\r\n" \
+                             "Cache-Control: no-cache, no-store, must-revalidate\r\n" \
+                             "Pragma: no-cache\r\n" \
+                             "Expires: 0\r\n" \
+                             "\r\n#{ret}"
             else
                 puts "error and info" if $debug
                 client.write "HTTP/1.1 200 OK\r\n" \
                              "Content-Type: text/html\r\n" \
-                             "Cache-Control: no-cache, no-store, must-revalidate" \
-                             "Pragma: no-cache" \
-                             "Expires: 0" \
+                             "Cache-Control: no-cache, no-store, must-revalidate\r\n" \
+                             "Pragma: no-cache\r\n" \
+                             "Expires: 0\r\n" \
                              """
                              <meta charset='UTF-8'>
                              <title>TeXify Online</title>

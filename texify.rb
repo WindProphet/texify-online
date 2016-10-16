@@ -7,6 +7,7 @@ class Texify
         @FILES = file if file
         @TYPE = type if type
         @OPTS = opt if opt
+        @LOG = ""
         # puts @FILES
     end
 
@@ -28,7 +29,7 @@ class Texify
             pipe.close_write
             @TYPE = pipe.read
         end
-        raise  "file command error" if $?.exitstatus != 0
+        raise  "ERROR: file command error" if $?.exitstatus != 0
     end
 
     def type_tex
@@ -39,8 +40,11 @@ class Texify
             IO.popen([
                 "xelatex",
                 "-halt-on-error",
-                "main.tex"]) do |pipe|
-                @TEXLOG = pipe.read
+                "main.tex"
+                ], {:err => [:child, :out]}) do |pipe|
+                @LOG << "TeX Log: \n\n"
+                @LOG << pipe.read
+                @LOG << "\n\n"
             end
             raise "TeXify error" if $?.exitstatus != 0
         end
@@ -53,11 +57,13 @@ class Texify
         end
         `mkdir #{@DIR}/files`
         Dir.chdir "#{@DIR}/files" do
-            IO.popen(["7za", "-y", "x", "#{@DIR}/archive.zip"]) do |pipe|
-                @ZIPLOG = pipe.read
+            IO.popen(["7za", "-y", "x", "#{@DIR}/archive.zip"], {:err => [:child, :out]}) do |pipe|
+                @LOG << "unarchive program log: \n\n"
+                @LOG << pipe.read
+                @LOG << "\n\n"
             end
         end
-        raise "zip archive error" if $?.exitstatus != 0
+        raise "ERROR: zip archive error" if $?.exitstatus != 0
         x = "" # texfile name
         d = "" # directory name
         Dir.foreach("#{@DIR}/files") do |entry|
@@ -84,8 +90,10 @@ class Texify
             IO.popen([
                 "xelatex",
                 "-halt-on-error",
-                x]) do |pipe|
-                @TEXLOG = pipe.read
+                x], {:err => [:child, :out]}) do |pipe|
+                @LOG << "unarchive program log: \n\n"
+                @LOG << pipe.read
+                @LOG << "\n\n"
             end
             raise "TeXify error" if $?.exitstatus != 0
         end
@@ -116,8 +124,7 @@ class Texify
     end
 
     def log
-        return @TEXLOG if @TEXLOG
-        return @ZIPLOG if @ZIPLOG
+        @LOG
     end
 
     def mode
