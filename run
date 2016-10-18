@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+Dir.chdir ARGV.shift do
+    IO.popen(ARGV, {:err => [:child, :out]}) do |pipe|
+        puts pipe.read
+    end
+    exit $?.exitstatus
+end

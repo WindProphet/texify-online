@@ -1,11 +1,11 @@
 #!/usr/bin/env ruby
 
 require 'socket'                # Get sockets from stdlib
+require 'optparse'
 
 `cd $(dirname $0)`
 `cat /tmp/rubyserver.pid && kill $(cat /tmp/rubyserver.pid) || echo 0`
 `echo #{Process.pid} > /tmp/rubyserver.pid`
-# puts Process.pid
 
 $port = ARGV[0] || 2000
 
