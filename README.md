@@ -6,7 +6,14 @@
 
 ensure you have installed `xelatex`
 
-	yum install -y git ruby unzip texlive-*
+	yum install -y git ruby unzip wget
+	
+	# install texlive
+	yum install -y perl-Digest-MD5
+	wget http://mirror.lzu.edu.cn/CTAN/systems/texlive/tlnet/install-tl.zip
+	unzip install-tl.zip -d texlive
+	./texlive/*/install-tl -all-options
+	
 	git clone git://github.com/WindProphet/texify-online
 	cd texify-online && ./texify-server.rb
 
