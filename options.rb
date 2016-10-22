@@ -27,11 +27,11 @@ OptionParser.new do |opts|
       $options[:log] = log
   end
 
-  opts.on("--javascript js", "add additional javascript file after webpage") do |js|
+  opts.on("--javascript js", "add additional javascript") do |js|
       $options[:javascript] = js
   end
 
-  opts.on("--stylesheet css", "add additional stylesheet file after webpage") do |css|
+  opts.on("--stylesheet css", "add additional stylesheet") do |css|
       $options[:stylesheet] = css
   end
 end.parse!

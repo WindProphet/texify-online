@@ -37,15 +37,16 @@ class Request
         when 'POST'
             opt = form_post
             log opt if $options[:debug]
-            t = texify(opt, @file)
+            t = texify(opt[:opt], opt[:file])
             unless t
                 @type = 'html'
                 @status = "403 Forbidden"
                 @return = Pages.reject
                 return
             end
-            @type = t.outtype
-            @return = t.output
+            log "get texify class".blue if $options[:debug]
+            log @type = t.outtype
+            log @return = t.output
         when 'GET'
             if @url == '/'
                 @return = Pages.mainpage

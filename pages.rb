@@ -1,11 +1,22 @@
 module Pages
 
+    def Pages.log(c)
+        """
+        <meta charset='UTF-8'>
+        <title>TeXify Online</title>
+        <h1>TeXify Error</h1>
+        #{c}
+        #{"<link rel='stylesheet' href='#{$options[:stylesheet]}' type='text/css' media='screen'>" if $options[:stylesheet]}
+        #{"<script src='#{$options[:javascript]}' type='text/javascript' charset='utf-8'></script>" if $options[:javascript]}
+        """
+    end
+
     def Pages.error(c)
         """
         <meta charset='UTF-8'>
         <title>TeXify Online</title>
         <h1>TeXify Error</h1>
-        <pre>#{ret}</pre>
+        <pre>#{c}</pre>
         #{"<link rel='stylesheet' href='#{$options[:stylesheet]}' type='text/css' media='screen'>" if $options[:stylesheet]}
         #{"<script src='#{$options[:javascript]}' type='text/javascript' charset='utf-8'></script>" if $options[:javascript]}
         """
