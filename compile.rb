@@ -1,3 +1,4 @@
+require 'WEBrick'
 $Works = {}
 class TeXify
     # constant
@@ -9,6 +10,7 @@ class TeXify
         @DIR = "/tmp/texify_#{@RANDIR}"
         @LOG = []
         @ADDFILETIME = 0
+        @compiler = "xelatex"
         IO.popen(["mkdir", @DIR])
         setopts(opt)
         unless @multiple
@@ -29,6 +31,7 @@ class TeXify
                 :name => "error",
                 :text => e.to_s
             }
+            errorpage
             return
         end
         run unless @multiple
@@ -43,6 +46,7 @@ class TeXify
     def addfile(file)
         unless @multiple
             # file type test
+            type = ''
             IO.popen(["file", "-"], "r+") do |pipe|
                 pipe.write file
                 pipe.close_write
@@ -50,6 +54,7 @@ class TeXify
             end
             raise "ERROR: file command error" if $?.exitstatus != 0
 
+            mode = ''
             if (type =~ /Zip archive data/) || (type =~ /application\/zip/)
                 mode = 'ZIP'
                 @LOG << {
@@ -67,15 +72,15 @@ class TeXify
 
             case mode
             when 'TEX'
-                File.open("#{@DIR}/main.tex", "w") do |file|
-                    file.write(@FILES)
+                File.open("#{@DIR}/main.tex", "w") do |f|
+                    f.write(file)
                 end
                 @directory = @DIR
                 @sourcefile = "main.tex"
                 @outputfile = "#{@DIR}/main.pdf"
             when 'ZIP'
-                File.open("#{@DIR}/archive.zip", "w") do |file|
-                    file.write(@FILES)
+                File.open("#{@DIR}/archive.zip", "w") do |f|
+                    f.write(@FILES)
                 end
                 IO.popen(["mkdir", "#{@DIR}/files"])
                 IO.popen(["unzip", "#{@DIR}/archive.zip", "-d", "#{@DIR}/files"], {:err => [:child, :out]}) do |pipe|
@@ -116,10 +121,14 @@ class TeXify
     end
 
     def errorpage
+        log "errorpage #{@LOG}" if $options[:debug]
         @TYPE = 'html'
-        @output = Pages.log @LOG.map do |a|
-            "<pre id='#{a[:name]}'>#{a[:text]}</pre>"
-        end.join '\n'
+        html = @LOG.map do |a|
+            "<pre id='#{a[:name]}'>#{WEBrick::HTMLUtils.escape a[:text]}</pre>"
+        end.join ''
+        @output = Pages.log html
+        log @output if $options[:debug]
+        return @output
     end
 
     def run
@@ -131,7 +140,7 @@ class TeXify
                 @directory,
                 @compiler,
                 "-halt-on-error",
-                @sourcefile], {:err => [:child, :out]}) do |pipe|
+                @sourcefile]) do |pipe|
                 @LOG << {
                     :name => "tex_log",
                     :text => "tex program log: \n\n#{pipe.read}"

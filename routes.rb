@@ -36,6 +36,7 @@ class Request
         case @method
         when 'POST'
             opt = form_post
+            @nocache = true
             log opt if $options[:debug]
             t = texify(opt[:opt], opt[:file])
             unless t
@@ -45,8 +46,8 @@ class Request
                 return
             end
             log "get texify class".blue if $options[:debug]
-            log @type = t.outtype
-            log @return = t.output
+            @type = t.outtype
+            @return = t.output
         when 'GET'
             if @url == '/'
                 @return = Pages.mainpage

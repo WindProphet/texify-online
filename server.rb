@@ -10,7 +10,8 @@ Process.daemon if $options[:daemon]
 `echo #{Process.pid} > /tmp/rubyserver.pid`
 $Threads = []
 loop do
-    tid = Thread.start(server.accept) do |client|
+    # tid = Thread.start(server.accept) do |client|
+    client = server.accept
         head = client.gets
         log head
         buffer = ""
@@ -33,6 +34,6 @@ loop do
         client.write Request.new(head, buffer).response
         log "request end".bold if $options[:debug]
         client.close
-    end
-    $Threads << {:instance => tid, :time => Time.now}
+    # end
+    # $Threads << {:instance => tid, :time => Time.now}
 end
